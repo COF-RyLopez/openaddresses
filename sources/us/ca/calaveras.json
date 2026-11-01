@@ -19,7 +19,7 @@
                 "conform": {
                     "format": "geojson",
                     "number": "st_num",
-                    "street": ["street", "st_type"],
+                    "street": ["stdirect", "street", "stype"],
                     "unit": "spacenum",
                     "city": "msagcomm"
                 }
