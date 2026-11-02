@@ -30,17 +30,96 @@
                         "ADDRNMBR",
                         "ADDRFRAC"
                     ],
-                    "street": [
-                        "ADDRPDIR",
-                        "ADDRNAME",
-                        "ADDRSFX",
-                        "ADDRPOSTD"
-                    ],
+                    "street": {
+                        "function": "chain",
+                        "variable": "street_wip",
+                        "functions": [
+                            {
+                                "function": "join",
+                                "fields": [
+                                    "ADDRPDIR",
+                                    "ADDRNAME",
+                                    "ADDRSFX",
+                                    "ADDRPOSTD"
+                                ],
+                                "separator": " "
+                            },
+                            {
+                                "function": "regexp",
+                                "field": "oa:street_wip",
+                                "pattern": "(?i)\\b0+([1-9][0-9]*(?:ST|ND|RD|TH))\\b|^",
+                                "replace": "$1"
+                            }
+                        ]
+                    },
                     "unit": "ADDRUNIT",
                     "city": "COMMUNITY",
                     "region": "STATE",
                     "postcode": "ADDRZIP",
                     "id": "ADDRAPNID"
+                },
+                "test": {
+                    "enabled": true,
+                    "description": "single-digit ordinal street names are zero-padded in the source (05TH); the padding is dropped so they match the road network",
+                    "acceptance-tests": [
+                        {
+                            "description": "a zero-padded ordinal loses its padding",
+                            "inputs": {
+                                "ADDRNMBR": "1470",
+                                "ADDRFRAC": "",
+                                "ADDRPDIR": "",
+                                "ADDRNAME": "05TH",
+                                "ADDRSFX": "ST",
+                                "ADDRPOSTD": "",
+                                "ADDRUNIT": "",
+                                "COMMUNITY": "IMPERIAL BEACH",
+                                "STATE": "CA",
+                                "ADDRZIP": "91932",
+                                "ADDRAPNID": "1"
+                            },
+                            "expected": {
+                                "street": "5TH ST"
+                            }
+                        },
+                        {
+                            "description": "a pre-directional is kept",
+                            "inputs": {
+                                "ADDRNMBR": "100",
+                                "ADDRFRAC": "",
+                                "ADDRPDIR": "W",
+                                "ADDRNAME": "02ND",
+                                "ADDRSFX": "AVE",
+                                "ADDRPOSTD": "",
+                                "ADDRUNIT": "",
+                                "COMMUNITY": "ESCONDIDO",
+                                "STATE": "CA",
+                                "ADDRZIP": "92025",
+                                "ADDRAPNID": "2"
+                            },
+                            "expected": {
+                                "street": "W 2ND AVE"
+                            }
+                        },
+                        {
+                            "description": "multi-digit ordinals and named streets are unchanged",
+                            "inputs": {
+                                "ADDRNMBR": "307",
+                                "ADDRFRAC": "",
+                                "ADDRPDIR": "",
+                                "ADDRNAME": "IMPERIAL BEACH",
+                                "ADDRSFX": "BLVD",
+                                "ADDRPOSTD": "",
+                                "ADDRUNIT": "",
+                                "COMMUNITY": "IMPERIAL BEACH",
+                                "STATE": "CA",
+                                "ADDRZIP": "91932",
+                                "ADDRAPNID": "3"
+                            },
+                            "expected": {
+                                "street": "IMPERIAL BEACH BLVD"
+                            }
+                        }
+                    ]
                 }
             }
         ],
